@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>D3 Axis Example</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        button, select, input[type=range] {
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        input[type=range] {
+            cursor: pointer;
+        }
+
+        select {
+            background-color: white;
+        }
+
+        svg {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+        }
+
+        #scrollableContainer {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        #controlpannel {
+        position: absolute; /* 使其可以在页面上自由移动 */
+        z-index: 1000; /* 确保它在其他元素上方 */
+        width: 200px; /* 或其他适当的宽度 */
+        height: auto; /* 或其他适当的高度 */
+        padding: 10px;
+        border: 1px solid #ddd; /* 可选的边框 */
+        background-color: white; /* 背景色 */
+        border-radius: 8px; /* 圆角边框 */
+        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2); /* 给浮窗添加阴影效果 */
+        }
+    </style>
+</head>
+<body>
+     <div  id= "controlpannel" style="display: flex;">
+        <div>
+            <div>
+                <input type="range" id="timeSlider" min="0" max="1107" value="0">
+                <button id="playButton">Play</button>
+                <span id="currentDate">2020-02-24</span>
+            </div>
+            <div>
+                <select id="dataSelect">
+                    <option value="total_cases_per_million">每百万人总感染人数</option>
+                    <option value="new_cases_smoothed">新增感染人数</option>
+                    <option value="new_cases_smoothed_per_million">每百万人新增感染人数</option>
+                    <option value="total_deaths">总死亡人数</option>
+                    <option value="total_deaths_per_million">每百万人总死亡人数</option>
+                    <option value="new_deaths_smoothed">新增死亡人数</option>
+                    <option value="new_deaths_smoothed_per_million">每百万人新增死亡人数</option>
+                    <option value="icu_patients">重症监护病人数</option>
+                    <option value="hosp_patients">医院病人数</option>
+                    <option value="weekly_icu_admissions">每周重症监护入院人数</option>
+                    <option value="hospital_beds_per_thousand">每千人医院床位数</option>
+                    <option value="reproduction_rate">传播率</option>
+                    <option value="positive_rate">阳性率</option>
+                    <option value="tests_per_case">每个病例的检测次数</option>
+                    <option value="total_vaccinations_per_hundred">每百人总疫苗接种人数</option>
+                    <option value="stringency_index">政策严格性指数</option>
+                </select> 
+            </div>
+            <div>
+                <select id="continentSelect">
+                    <option value="All">全球</option>
+                    <option value="Africa">非洲</option>
+                    <option value="Asia">亚洲</option>
+                    <option value="Europe">欧洲</option>
+                    <option value="North America">北美洲</option>
+                    <option value="Oceania">大洋洲</option>
+                    <option value="South America">南美洲</option>
+                </select>
+            </div>
+            <div>
+                <label for="numberInput">折线图天数：</label>
+                <input type="number" id="daysInput" name="daysInput" value="200">
+            </div>
+        </div>
+      
+    </div> 
+    <div style="display: flex; height: 1080px;">
+        <div style="height: 1080px; width: 400px;">
+            <div style="display: flex; justify-content: space-between; height: 270px">
+                <h2 id="dataAnalysisTitle">
+                    COVID-19流行病分析
+                </h2> 
+                <img id="countryFlag" src="" alt="Country Flag" style="width: 40%; height: 40%;"> 
+            </div>
+            <div id="scrollableContainer" style="overflow-y: scroll; overflow-x: hidden; height: 780px;">
+                <h2 id="countryName" style="width: 33%";>国家名称</h2>
+                <p id="total_cases_per_million">每百万人总感染人数: </p>
+                <p id="new_cases_per_million">每百万人新增感染人数: </p>
+                <p id="total_deaths_per_million">每百万人总死亡人数: </p>
+                <p id="new_deaths_per_million">每百万人新增死亡人数: </p>
+                <p id="reproduction_rate">传染率: </p>
+                <p id="icu_patients">重症监护病人数: </p>
+                <p id="icu_patients_per_million">每百万人重症监护病人数: </p>
+                <p id="hosp_patients">医院治疗病人数: </p>
+                <p id="hosp_patients_per_million">每百万人医院治疗病人数: </p>
+                <p id="weekly_icu_admissions">每周重症监护病人入院数: </p>
+                <p id="weekly_icu_admissions_per_million">每百万人每周重症监护病人入院数: </p>
+                <p id="weekly_hosp_admissions">每周医院病人入院数: </p>
+                <p id="weekly_hosp_admissions_per_million">每百万人每周医院病人入院数: </p>
+                <p id="total_tests">总检测数: </p>
+                <p id="new_tests">新增检测数: </p>
+                <p id="total_tests_per_thousand">每千人总检测数: </p>
+                <p id="new_tests_per_thousand">每千人新增检测数: </p>
+                <p id="positive_rate">阳性率: </p>
+                <p id="tests_per_case">每例病例检测数: </p>
+                <p id="tests_units">检测单位: </p>
+                <p id="total_vaccinations">总疫苗接种数: </p>
+                <p id="people_vaccinated">接种疫苗人数: </p>
+                <p id="people_fully_vaccinated">完全接种疫苗人数: </p>
+                <p id="total_boosters">加强针接种数: </p>
+                <p id="new_vaccinations">新增疫苗接种数: </p>
+                <p id="total_vaccinations_per_hundred">每百人总疫苗接种数: </p>
+                <p id="people_vaccinated_per_hundred">每百人接种疫苗数: </p>
+                <p id="people_fully_vaccinated_per_hundred">每百人完全接种疫苗数: </p>
+                <p id="total_boosters_per_hundred">每百人加强针接种数: </p>
+                <p id="stringency_index">防疫严格程度指数: </p>
+                <p id="population_density">人口密度: </p>
+                <p id="aged_65_older">65岁以上人口比例: </p>
+                <p id="aged_70_older">70岁以上人口比例: </p>
+                <p id="gdp_per_capita">人均GDP: </p>
+                <p id="extreme_poverty">极端贫困率: </p>
+                <p id="cardiovasc_death_rate">心血管疾病死亡率: </p>
+                <p id="diabetes_prevalence">糖尿病患病率: </p>
+                <p id="female_smokers">女性吸烟者比例: </p>
+                <p id="male_smokers">男性吸烟者比例: </p>
+                <p id="handwashing_facilities">洗手设施普及率: </p>
+                <p id="hospital_beds_per_thousand">每千人医院床位数: </p>
+                <p id="life_expectancy">预期寿命: </p>
+                <p id="human_development_index">人类发展指数: </p>
+                <p id="population">人口: </p>
+                <p id="excess_mortality_cumulative_absolute">累计超额死亡人数: </p>
+                <p id="excess_mortality_cumulative">累计超额死亡率: </p>
+                <p id="excess_mortality">超额死亡: </p>
+                <p id="excess_mortality_cumulative_per_million">每百万人累计超额死亡率: </p>
+            </div>
+        </div>
+        <div>
+            <div style="display: flex;">
+                <div style="display: flex;">
+                    <svg id="treeMap" style="height: 540px; width: 800px"></svg>
+                    <div id="treeMapLegend" style="height: 540px; width: 100px;"></div>
+                </div>
+                <div class="map-container">
+                    <svg id="myMap" style="height: 540px; width: 800px"></svg>
+                </div>
+            </div>
+            <div>
+                <svg id="lineChart" style="height: 540px; width: 1700px"></svg>
+            </div>
+        </div>
+    </div>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="./script.js" type="module"></script>
+</body>
+</html>
